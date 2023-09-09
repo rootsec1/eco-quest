@@ -15,10 +15,10 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    Timer(const Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 2), () {
       Navigator.pushNamedAndRemoveUntil(
         context,
-        ScreenNames.HOME.name,
+        ScreenNames.SIGN_IN.name,
         (_) => false,
       );
     });
@@ -28,16 +28,29 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: primaryColor,
-        child: const Center(
-          child: Text(
-            appName,
-            style: TextStyle(
-              color: backgroundColor,
-              fontSize: standardSeparation * 2,
+      backgroundColor: primaryColor,
+      body: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              appName.substring(0, 3),
+              style: const TextStyle(
+                color: backgroundColor,
+                fontSize: standardSeparation * 2,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
+            Text(
+              appName.substring(3),
+              style: const TextStyle(
+                color: Colors.greenAccent,
+                fontSize: standardSeparation * 2,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
