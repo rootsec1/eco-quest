@@ -86,6 +86,10 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
           itemCount: leaderboardList.length,
           itemBuilder: (context, index) {
             dynamic leaderboardEntry = leaderboardList[index];
+            int carbonFootprint = leaderboardEntry['total_carbon_footprint'];
+            if (carbonFootprint.toString().length > 5) {
+              carbonFootprint = carbonFootprint ~/ 10;
+            }
             return Card(
               color: _getColorForRank(index + 1),
               child: ListTile(
@@ -101,7 +105,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
                   ),
                 ),
                 subtitle: Text(
-                  '${leaderboardEntry['total_carbon_footprint'] / 1000} kg of CO2',
+                  '${carbonFootprint / 1000} kg of CO2',
                 ),
               ),
             );
@@ -114,48 +118,49 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.only(
-          left: standardSeparation / 2,
-          right: standardSeparation / 2,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const TitleAndSubTitleWidget(
-                  titleText: 'leaderboard',
-                  subTitleText: 'see how you compare',
-                ),
-                Expanded(
-                  child: SizedBox(
-                    height: 80,
-                    child: Lottie.asset(
-                      "assets/lottie/leaderboard.json",
-                      alignment: Alignment.centerRight,
-                      frameRate: FrameRate(120),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.only(
+            left: standardSeparation / 2,
+            right: standardSeparation / 2,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const TitleAndSubTitleWidget(
+                    titleText: 'leaderboard',
+                    subTitleText: 'see how you compare',
+                  ),
+                  Expanded(
+                    child: SizedBox(
+                      height: 80,
+                      child: Lottie.asset(
+                        "assets/lottie/leaderboard.json",
+                        alignment: Alignment.centerRight,
+                        frameRate: FrameRate(120),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: standardSeparation),
-            const CouponCarouselCard(),
-            const SizedBox(height: standardSeparation),
-            const Text(
-              "🏆 Top 5",
-              style: TextStyle(
-                fontSize: standardSeparation + 4,
-                fontWeight: FontWeight.bold,
+                ],
               ),
-            ),
-            const SizedBox(height: standardSeparation),
-            _getLeaderboardTable(),
-          ],
+              const SizedBox(height: standardSeparation),
+              const CouponCarouselCard(),
+              const SizedBox(height: standardSeparation),
+              const Text(
+                "🏆 Top 5",
+                style: TextStyle(
+                  fontSize: standardSeparation + 4,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              _getLeaderboardTable(),
+            ],
+          ),
         ),
       ),
     );

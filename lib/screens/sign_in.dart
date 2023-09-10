@@ -39,7 +39,7 @@ class _SignInScreenState extends State<SignInScreen> {
           // User logged in
           Navigator.pushNamedAndRemoveUntil(
             context,
-            ScreenNames.HOME.name,
+            ScreenNames.ACTIVITY.name,
             (route) => false,
           );
         }
