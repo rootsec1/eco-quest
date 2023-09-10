@@ -1,6 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:dio/dio.dart';
 import 'package:ecoquest/common_widgets.dart';
 import 'package:ecoquest/constants.dart';
+import 'package:ecoquest/util.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 
 class HostCarpoolScreen extends StatefulWidget {
   const HostCarpoolScreen({super.key});
@@ -21,11 +27,88 @@ class _HostCarpoolScreenState extends State<HostCarpoolScreen> {
   bool _isOtherSelected = false;
   bool _isWheelchairAccessible = false;
 
+  onHostCarpoolButtonPressed() async {
+    if (_originController.text.isEmpty) {
+      alertUser(
+        'Please enter the street address of your origin',
+        context,
+      );
+      return;
+    }
+
+    if (_destinationController.text.isEmpty) {
+      alertUser(
+        'Please enter the street address of your destination',
+        context,
+      );
+      return;
+    }
+
+    if (_seatsAvailableController.text.isEmpty) {
+      alertUser(
+        'Please enter the number of seats available',
+        context,
+      );
+      return;
+    }
+
+    if (!_isMaleSelected && !_isFemaleSelected && !_isOtherSelected) {
+      alertUser('Please select at least one gender', context);
+      return;
+    }
+
+    String origin = _originController.text.trim();
+    String destination = _destinationController.text.trim();
+    int seatsAvailable = int.parse(_seatsAvailableController.text.trim());
+
+    List<Location> locationsOrigin = await locationFromAddress(origin);
+    List<Location> locationsDestination =
+        await locationFromAddress(destination);
+
+    if (locationsOrigin.isEmpty) {
+      alertUser('Please enter a valid origin address', context);
+      return;
+    }
+
+    if (locationsDestination.isEmpty) {
+      alertUser('Please enter a valid destination', context);
+      return;
+    }
+
+    Location originLocation = locationsOrigin.first;
+    Location destinationLocation = locationsDestination.first;
+
+    String allowedGenders = "";
+    if (_isMaleSelected) allowedGenders += "male,";
+    if (_isFemaleSelected) allowedGenders += "female,";
+    if (_isOtherSelected) allowedGenders += "other,";
+    allowedGenders = allowedGenders.substring(0, allowedGenders.length - 1);
+    if (_isMaleSelected && _isFemaleSelected && _isOtherSelected) {
+      allowedGenders = "all";
+    }
+
+    final Response apiResponse = await dioClientGlobal.post(
+      '${baseApiUrl}host-carpool-task/',
+      data: {
+        'uid': FirebaseAuth.instance.currentUser?.uid,
+        'source_location':
+            '${originLocation.latitude},${originLocation.longitude}',
+        'destination_location':
+            '${destinationLocation.latitude},${destinationLocation.longitude}',
+        'seats_available': seatsAvailable,
+        'allowed_genders': allowedGenders,
+        'is_wheelchair_accessible': _isWheelchairAccessible,
+      },
+    );
+    final dynamic responseData = apiResponse.data;
+    print(responseData);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: onHostCarpoolButtonPressed,
         icon: const Icon(
           Icons.arrow_forward,
           size: standardSeparation * 1.5,

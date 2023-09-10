@@ -1,7 +1,7 @@
+import 'package:ecoquest/constants.dart';
 import 'package:ecoquest/enum.dart';
 import 'package:ecoquest/firebase_options.dart';
 import 'package:ecoquest/routes.dart';
-import 'package:ecoquest/constants.dart';
 import 'package:ecoquest/theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

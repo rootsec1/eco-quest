@@ -24,7 +24,7 @@ class _SignInScreenState extends State<SignInScreen> {
       // User already logged in
       Navigator.pushNamedAndRemoveUntil(
         context,
-        ScreenNames.HOME.name,
+        ScreenNames.ACTIVITY.name,
         (route) => false,
       );
     } else {
