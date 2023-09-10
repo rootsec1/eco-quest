@@ -8,6 +8,7 @@ import 'package:ecoquest/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class _ShortcutsWidget extends StatelessWidget {
   const _ShortcutsWidget();
@@ -277,7 +278,7 @@ class _RecentActivityFragment extends StatelessWidget {
                             .replaceAll("log_", "")
                             .replaceAll("_", " ");
 
-                        final pointsForReporting = round(co2Emissions * 2);
+                        final pointsForReporting = round(co2Emissions * 2 * 10);
 
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
@@ -543,6 +544,19 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     subTitleText: 'monitor your sustainability score',
                   ),
                   Expanded(child: Container()),
+                  IconButton(
+                    onPressed: () async {
+                      if (!await launchUrl(Uri.parse(
+                          "https://www.durhamnc.gov/862/Recycling"))) {
+                        throw Exception('Could not launch URL');
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.assistant,
+                      size: standardSeparation * 1.5,
+                      color: defaultTextColor,
+                    ),
+                  ),
                   IconButton(
                     onPressed: () {
                       Navigator.pushNamed(

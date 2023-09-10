@@ -8,6 +8,7 @@ import 'package:ecoquest/screens/host_carpool.dart';
 import 'package:ecoquest/screens/leaderboard.dart';
 import 'package:ecoquest/screens/sign_in.dart';
 import 'package:ecoquest/screens/splash.dart';
+import 'package:ecoquest/screens/webview_screen.dart';
 import 'package:flutter/material.dart';
 
 final Map<String, Widget Function(BuildContext context)> appRoutes =
@@ -22,4 +23,5 @@ final Map<String, Widget Function(BuildContext context)> appRoutes =
   ScreenNames.ADD_RECYCLING_ACTIVITY.name: (_) => const AddRecyclingActivity(),
   ScreenNames.HOST_CARPOOL.name: (_) => const HostCarpoolScreen(),
   ScreenNames.SEARCH_CARPOOL.name: (_) => const HostCarpoolScreen(),
+  ScreenNames.WEBVIEW_SCREEN.name: (_) => const WebViewScreen(),
 };

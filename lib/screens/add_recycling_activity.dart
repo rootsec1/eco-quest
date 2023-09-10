@@ -1,5 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:ecoquest/util.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:ecoquest/common_widgets.dart';
@@ -21,6 +25,8 @@ class _AddRecyclingActivityState extends State<AddRecyclingActivity> {
   XFile? _selectedImage;
   bool _isLoading = false;
 
+  final TextEditingController _quantityController = TextEditingController();
+
   _onTakePicturePressed() async {
     final XFile? photo = await _imagePicker.pickImage(
       source: ImageSource.camera,
@@ -35,12 +41,34 @@ class _AddRecyclingActivityState extends State<AddRecyclingActivity> {
       return;
     }
 
+    if (_quantityController.text.trim().isEmpty) {
+      alertUser('Please enter a valid weight', context);
+      return;
+    }
+
+    final double quantity = double.parse(_quantityController.text.trim());
+
     try {
       setState(() => _isLoading = true);
       final tempImageRef = _storageRef.child("images/temp.jpg");
       final uploadTask = await tempImageRef.putFile(File(_selectedImage!.path));
       final downloadUrl = await uploadTask.ref.getDownloadURL();
-      print(downloadUrl);
+      final Response response = await dioClientGlobal.post(
+        '${baseApiUrl}submit-recycling-activity/',
+        data: {
+          'uid': FirebaseAuth.instance.currentUser?.uid,
+          'quantity': quantity,
+          'image_url': downloadUrl,
+        },
+      );
+      final responseData = response.data;
+      final String item = responseData["prediction"];
+      final double carbonEmission = responseData["carbon_footprint"];
+
+      alertUser(
+          "Added $item with a carbon footprint of $carbonEmission kg", context);
+
+      Navigator.pop(context);
     } catch (e) {
       alertUser('ERROR: $e', context);
     } finally {
@@ -111,6 +139,17 @@ class _AddRecyclingActivityState extends State<AddRecyclingActivity> {
                   ),
                 ),
               ),
+              const SizedBox(height: standardSeparation),
+              if (_selectedImage != null)
+                TextField(
+                  enabled: !_isLoading,
+                  controller: _quantityController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Quantity of trash (approx in grams)',
+                  ),
+                ),
               const SizedBox(height: standardSeparation * 2),
               if (_isLoading) const LinearProgressIndicator(),
             ],

@@ -16,6 +16,7 @@ enum ScreenNames {
   ADD_RECYCLING_ACTIVITY,
   HOST_CARPOOL,
   SEARCH_CARPOOL,
+  WEBVIEW_SCREEN,
 }
 
 enum TransitTypes {
